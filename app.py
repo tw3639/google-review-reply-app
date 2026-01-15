@@ -71,44 +71,48 @@ if mode == "単体レビュー":
             prompt, meta = build_prompt(review, rating)
 
             with st.spinner("返信文を生成中..."):
-                reply = generate_reply(
+                st.session_state.reply = generate_reply(
                     prompt,
                     temperature=meta["temperature"]
                 )
 
-            st.subheader("生成された返信文（編集可）")
+    # -----------------------------
+    # 生成済み返信がある場合のみ表示
+    # -----------------------------
+    if "reply" in st.session_state:
+        st.subheader("生成された返信文（編集可）")
 
-            edited_reply = st.text_area(
-                "必要に応じて表現を調整してください",
-                reply,
-                height=240
-            )
+        edited_reply = st.text_area(
+            "必要に応じて表現を調整してください",
+            st.session_state.reply,
+            height=240
+        )
 
-            # -----------------------------
-            # AIっぽさスコア表示（編集後）
-            # -----------------------------
-            score = calc_ai_likeness(edited_reply)
+        # -----------------------------
+        # AIっぽさスコア表示（編集後）
+        # -----------------------------
+        score = calc_ai_likeness(edited_reply)
 
-            st.markdown("### 🧪 AIっぽさスコア")
-            st.caption(
-                "このスコアは、文章の中に含まれる**定型的・機械的に見えやすい表現の傾向**を"
-                "独自基準で数値化したものです。"
-            )
+        st.markdown("### 🧪 AIっぽさスコア")
+        st.caption(
+            "このスコアは、文章の中に含まれる**定型的・機械的に見えやすい表現の傾向**を"
+            "独自基準で数値化したものです。"
+        )
 
-            st.progress(score / 100)
-            st.markdown(f"**スコア：{score} / 100**")
+        st.progress(score / 100)
+        st.markdown(f"**スコア：{score} / 100**")
 
-            with st.expander("AIっぽさスコアの考え方（必ずお読みください）"):
-                st.markdown("""
-                このスコアは **品質・良し悪しを判定するものではありません**。
+        with st.expander("AIっぽさスコアの考え方（必ずお読みください）"):
+            st.markdown("""
+            このスコアは **品質・良し悪しを判定するものではありません**。
 
-                - 高スコアでも、業務上まったく問題なく使える文章は多く存在します
-                - 低スコアでも、必ずしも「正解の表現」というわけではありません
+            - 高スコアでも、業務上まったく問題なく使える文章は多く存在します
+            - 低スコアでも、必ずしも「正解の表現」というわけではありません
 
-                あくまで  
-                **「自分で手直しした結果、定型AI感がどう変化したかを確認するための補助指標」**  
-                としてご活用ください。
-                """)
+            あくまで  
+            **「自分で手直しした結果、定型AI感がどう変化したかを確認するための補助指標」**  
+            としてご活用ください。
+            """)
 
 # =====================================================
 # CSV一括生成（軽量）
