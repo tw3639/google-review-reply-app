@@ -8,7 +8,7 @@ from csv_batch import csv_batch_generate
 # ページ設定
 # -----------------------------
 st.set_page_config(
-    page_title="Review Reply QA",
+    page_title="Review Reply Assistant",
     layout="wide"
 )
 
